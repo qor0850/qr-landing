@@ -1,6 +1,6 @@
-
 import streamlit as st
 from urllib.parse import urlencode
+from datetime import datetime
 
 # -----------------------------
 # Config
@@ -16,40 +16,39 @@ PROFILE_NAME = "백XX"
 TAGLINE = "자동화개발자 | RPA·AI·교육"
 PROFILE_PHOTO_URL = ""  # Optional: link to a hosted image (png/jpg), or leave empty
 
-# Video URLs (YouTube recommended). You can also put direct mp4 links.
-SHORTS_VIDEO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"  # 1분 이내 쇼츠/리일스 느낌
-CAREER_VIDEO_URL = "https://www.youtube.com/watch?v=oHg5SJYRHA0"  # 2~3분 경력 소개
+# Video URLs (YouTube recommended)
+SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/shots.mp4"
+CAREER_VIDEO_URL = "https://www.youtube.com/watch?v=oHg5SJYRHA0"
 
 # Contact & Location
-PHONE_NUMBER = "+82-10-0000-0000"      # tel: 링크로 사용
-EMAIL_ADDRESS = "you@example.com"      # mailto: 링크로 사용
-KAKAO_CHANNEL_URL = "https://pf.kakao.com/_yourchannel"  # 카카오톡 채널(선택)
-INSTAGRAM_URL = "https://www.instagram.com/your_instagram"  # 인스타그램(선택)
-NAVER_MAPS_URL = "https://naver.me/xxxx"   # 네이버지도 공유 링크(선택)
-RESERVATION_URL = ""  # 네이버 예약/폼/캘린더 등 (선택)
+PHONE_NUMBER = "+82-10-0000-0000"
+EMAIL_ADDRESS = "you@example.com"
+KAKAO_CHANNEL_URL = "https://pf.kakao.com/_yourchannel"
+INSTAGRAM_URL = "https://www.instagram.com/your_instagram"
+NAVER_MAPS_URL = "https://naver.me/FTML1DNz"
+RESERVATION_URL = ""
 
-# Colors (high-contrast for accessibility)
-COLOR_1 = "#2F80ED"  # Blue
-COLOR_2 = "#27AE60"  # Green
-COLOR_3 = "#F2994A"  # Orange
-COLOR_4 = "#EB5757"  # Red
+# Colors
+COLOR_1 = "#2F80ED"
+COLOR_2 = "#27AE60"
+COLOR_3 = "#F2994A"
+COLOR_4 = "#EB5757"
 TEXT_COLOR = "#FFFFFF"
 
-# ===========================================
+# 생년월일 + 성별 (자동)
+BIRTH_INPUT = "920601-1"  # YYMMDD-X 형식
 
+# ===========================================
 # -----------------------------
 # Helpers
 # -----------------------------
 def set_route(route: str):
-    # write into st.query_params so URL reflects state
     st.query_params["route"] = route
 
 def get_route() -> str:
-    # use new stable API
     params = st.query_params
     if "route" in params and params["route"]:
         return params["route"]
-    # fallback to 'home'
     return "home"
 
 def back_to_home():
@@ -70,34 +69,52 @@ def contact_buttons():
     if NAVER_MAPS_URL:
         st.link_button("📍 위치(네이버지도)", NAVER_MAPS_URL, use_container_width=True)
 
+def parse_birth_info(birth_str: str):
+    yy = int(birth_str[0:2])
+    mm = int(birth_str[2:4])
+    dd = int(birth_str[4:6])
+    gender_code = int(birth_str.split("-")[1][0])
+
+    # 1900/2000 세기 구분
+    if gender_code in [1, 2]:
+        year = 1900 + yy
+    else:
+        year = 2000 + yy
+
+    birth_date = datetime(year, mm, dd)
+    today = datetime.today()
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    gender = "남" if gender_code % 2 == 1 else "여"
+    return year, mm, dd, gender, age
+
 # -----------------------------
-# CSS (full-screen 4-tile menu)
+# CSS
 # -----------------------------
 GLOBAL_CSS = f"""
 <style>
-/* Remove extra paddings for true full-screen tiles */
 .appview-container .main .block-container {{
     padding-top: 0rem;
     padding-bottom: 0rem;
 }}
-/* Full-viewport menu grid */
 .menu-grid {{
     height: 100vh;
-    width: 100vw;
+    width: 100%; /* Changed from 100vw to 100% to prevent overflow */
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;   /* 세로 가운데 */
+    align-items: center;       /* 가로 가운데 */
 }}
 .menu-card {{
-    height: 25vh;     /* Each tile = 25% viewport height */
+    height: 25vh;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-weight: 800;
-    font-size: clamp(20px, 5vw, 28px); /* Responsive large text */
+    font-size: clamp(20px, 5vw, 28px);
     letter-spacing: 0.4px;
     color: {TEXT_COLOR};
     user-select: none;
@@ -111,8 +128,6 @@ GLOBAL_CSS = f"""
 .menu-2 {{ background: {COLOR_2}; }}
 .menu-3 {{ background: {COLOR_3}; }}
 .menu-4 {{ background: {COLOR_4}; }}
-
-/* Make anchor fill the tile area */
 .menu-card a {{
     display: flex;
     align-items: center;
@@ -122,17 +137,13 @@ GLOBAL_CSS = f"""
     text-decoration: none !important;
     color: {TEXT_COLOR} !important;
 }}
-/* Large emoji icon spacing */
 .menu-icon {{
     margin-right: 12px;
     font-size: 1.2em;
 }}
-
-/* Content pages spacing */
 .content {{
     padding: 16px 8px 32px;
 }}
-
 .info-card {{
     border-radius: 16px;
     padding: 16px;
@@ -166,7 +177,6 @@ st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 # Views
 # -----------------------------
 def view_home():
-    # Full-screen senior-friendly 4-tile menu (width 100%, height 25% each)
     st.markdown(
         f"""
         <div class="menu-grid">
@@ -177,10 +187,10 @@ def view_home():
                 <a href="?{urlencode({"route": "shorts"})}"><span class="menu-icon">🎬</span>쇼츠 영상</a>
             </div>
             <div class="menu-card menu-3">
-                <a href="?{urlencode({"route": "career"})}"><span class="menu-icon">🏆</span>경력 영상</a>
+                <a href="?{urlencode({"route": "career"})}"><span class="menu-icon">🏆</span>상세 영상</a>
             </div>
             <div class="menu-card menu-4">
-                <a href="?{urlencode({"route": "contact"})}"><span class="menu-icon">📍</span>예약·연락/위치</a>
+                <a href="?{urlencode({"route": "contact"})}"><span class="menu-icon">📍</span>질문</a>
             </div>
         </div>
         """,
@@ -195,13 +205,17 @@ def view_about():
     if PROFILE_PHOTO_URL:
         st.image(PROFILE_PHOTO_URL, width=140)
 
-    # Structured intro content per user's request
+    # 생년월일 + 성별 계산
+    year, mm, dd, gender, age = parse_birth_info(BIRTH_INPUT)
+
+    # 기본 정보 카드
     st.markdown(
-        """
+        f"""
         <div class="info-card">
             <div class="info-title">기본 정보</div>
-            <div class="info-row">👤 <b>이름</b>: 백XX</div>
-            <div class="info-row">🎂 <b>나이</b>: 34세</div>
+            <div class="info-row">👤 <b>이름</b>: {PROFILE_NAME}</div>
+            <div class="info-row">🎂 <b>생년월일</b>: {year}-{mm:02d}-{dd:02d} ({gender})</div>
+            <div class="info-row">📏 <b>나이</b>: {age}세</div>
             <div class="info-row">💼 <b>직업</b>: 자동화개발자</div>
         </div>
         """,
@@ -210,6 +224,7 @@ def view_about():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # 경력 카드
     st.markdown(
         """
         <div class="info-card">
@@ -231,7 +246,21 @@ def view_shorts():
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 쇼츠 / 리일스")
     st.markdown("가볍게 볼 수 있는 1분 내외의 짧은 영상입니다.")
-    st.video(SHORTS_VIDEO_URL)
+
+    # 세로 9:16 비율로 맞춘 영상 (가운데 정렬)
+    st.markdown(
+        f"""
+            <div style="display: flex; justify-content: center; margin-top: 16px;">
+                <video style="width: 360px; aspect-ratio: 9 / 16; border-radius: 12px;" 
+                       controls autoplay loop muted>
+                    <source src="{SHORTS_VIDEO_URL}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            """,
+        unsafe_allow_html=True
+    )
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 def view_career():
