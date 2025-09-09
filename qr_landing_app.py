@@ -21,8 +21,8 @@ SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/m
 CAREER_VIDEO_URL = "https://www.youtube.com/watch?v=oHg5SJYRHA0"
 
 # Contact & Location
-PHONE_NUMBER = "+82-10-0000-0000"
-EMAIL_ADDRESS = "you@example.com"
+PHONE_NUMBER = "+82-10-2419-0850"
+EMAIL_ADDRESS = "qorals0850@naver.com"
 KAKAO_CHANNEL_URL = "https://pf.kakao.com/_yourchannel"
 INSTAGRAM_URL = "https://www.instagram.com/your_instagram"
 NAVER_MAPS_URL = "https://naver.me/FTML1DNz"
