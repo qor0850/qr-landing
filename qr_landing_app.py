@@ -22,6 +22,10 @@ st.set_page_config(
 # -----------------------------
 PROFILE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1eOApzLbogOSx68xf7d3Wj0xs-7acj9HKLDM5GXMR4P0/export?format=csv&gid=0"
 CAREER_SHEET_URL = "https://docs.google.com/spreadsheets/d/18ohr0sXHqPYu0Bzk8UCQUsKGNCIUHoAEQm0FA7IrdKA/export?format=csv&gid=0"
+
+# Video URLs (YouTube recommended)
+SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/shots.mp4"
+
 # -----------------------------
 # 데이터 로드
 # -----------------------------
@@ -223,7 +227,7 @@ def view_shorts():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 쇼츠 / 리일스")
-    st.video(profile_data.get("SHORTS_VIDEO_URL", ""))
+    st.video(profile_data.get("https://github.com/qor0850/streamlit-shorts.git", ""))
     st.markdown('</div>', unsafe_allow_html=True)
 
 def view_career():
