@@ -7,8 +7,7 @@ from openai import OpenAI
 # -----------------------------
 # OpenAI 설정
 # -----------------------------
-client = OpenAI(api_key=st.secrets["openai"]["api_key"])  #  권장
-
+client = OpenAI(api_key=st.secrets["api_key"])
 # -----------------------------
 # Config
 # -----------------------------
