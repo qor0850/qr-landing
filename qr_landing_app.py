@@ -1,6 +1,13 @@
 import streamlit as st
 from urllib.parse import urlencode
 from datetime import datetime
+import pandas as pd
+from openai import OpenAI
+
+# -----------------------------
+# OpenAI 설정
+# -----------------------------
+client = OpenAI(api_key="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")  # st.secrets["openai"]["api_key"] 권장
 
 # -----------------------------
 # Config
@@ -11,34 +18,28 @@ st.set_page_config(
     layout="wide",
 )
 
-# ======== USER SETTINGS (EDIT HERE) ========
-PROFILE_NAME = "백XX"
-TAGLINE = "자동화개발자 | RPA·AI·교육"
-PROFILE_PHOTO_URL = ""  # Optional: link to a hosted image (png/jpg), or leave empty
+# -----------------------------
+# Google Sheets URL
+# -----------------------------
+PROFILE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1eOApzLbogOSx68xf7d3Wj0xs-7acj9HKLDM5GXMR4P0/export?format=csv&gid=0"
+CAREER_SHEET_URL = "https://docs.google.com/spreadsheets/d/18ohr0sXHqPYu0Bzk8UCQUsKGNCIUHoAEQm0FA7IrdKA/export?format=csv&gid=0"
+# -----------------------------
+# 데이터 로드
+# -----------------------------
+@st.cache_data
+def load_profile_sheet(url):
+    df = pd.read_csv(url)
+    keys = df.iloc[:, 0].astype(str).str.strip()
+    vals = df.iloc[:, 1].astype(str).str.strip()
+    return dict(zip(keys, vals))
 
-# Video URLs (YouTube recommended)
-SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/shots.mp4"
-CAREER_VIDEO_URL = "https://www.youtube.com/watch?v=oHg5SJYRHA0"
+@st.cache_data
+def load_career_sheet(url):
+    return pd.read_csv(url)
 
-# Contact & Location
-PHONE_NUMBER = "+82-10-2419-0850"
-EMAIL_ADDRESS = "qorals0850@naver.com"
-KAKAO_CHANNEL_URL = "https://pf.kakao.com/_yourchannel"
-INSTAGRAM_URL = "https://www.instagram.com/your_instagram"
-NAVER_MAPS_URL = "https://naver.me/FTML1DNz"
-RESERVATION_URL = ""
+profile_data = load_profile_sheet(PROFILE_SHEET_URL)
+career_data = load_career_sheet(CAREER_SHEET_URL)
 
-# Colors
-COLOR_1 = "#2F80ED"
-COLOR_2 = "#27AE60"
-COLOR_3 = "#F2994A"
-COLOR_4 = "#EB5757"
-TEXT_COLOR = "#FFFFFF"
-
-# 생년월일 + 성별 (자동)
-BIRTH_INPUT = "920601-1"  # YYMMDD-X 형식
-
-# ===========================================
 # -----------------------------
 # Helpers
 # -----------------------------
@@ -52,189 +53,167 @@ def get_route() -> str:
     return "home"
 
 def back_to_home():
-    st.markdown(f"[⬅️ 홈으로](?{urlencode({'route':'home'})})")
+    st.markdown(f"[⬅️ 홈으로](?{urlencode({'route': 'home'})})")
+
+def parse_birth_info(birth_str: str, gender_str: str = ""):
+    try:
+        yy = int(birth_str[0:2])
+        mm = int(birth_str[2:4])
+        dd = int(birth_str[4:6])
+
+        current_year = datetime.today().year
+        year = 2000 + yy if (2000 + yy) <= current_year else 1900 + yy
+
+        birth_date = datetime(year, mm, dd)
+        today = datetime.today()
+        age = today.year - birth_date.year - (
+                (today.month, today.day) < (birth_date.month, birth_date.day)
+        )
+
+        gender = gender_str if gender_str else "-"
+        return year, mm, dd, gender, age
+    except Exception:
+        return "-", "-", "-", "-", "-"
 
 def contact_buttons():
     cols = st.columns(2)
     with cols[0]:
-        st.link_button("📞 전화하기", f"tel:{PHONE_NUMBER}")
+        st.link_button("📞 전화하기", f"tel:{profile_data.get('연락처','')}")
     with cols[1]:
-        st.link_button("✉️ 이메일", f"mailto:{EMAIL_ADDRESS}")
-    if KAKAO_CHANNEL_URL:
-        st.link_button("💬 카카오톡 채널", KAKAO_CHANNEL_URL, use_container_width=True)
-    if INSTAGRAM_URL:
-        st.link_button("📷 인스타그램", INSTAGRAM_URL, use_container_width=True)
-    if RESERVATION_URL:
-        st.link_button("🗓 예약하기", RESERVATION_URL, use_container_width=True)
-    if NAVER_MAPS_URL:
-        st.link_button("📍 위치(네이버지도)", NAVER_MAPS_URL, use_container_width=True)
-
-def parse_birth_info(birth_str: str):
-    yy = int(birth_str[0:2])
-    mm = int(birth_str[2:4])
-    dd = int(birth_str[4:6])
-    gender_code = int(birth_str.split("-")[1][0])
-
-    # 1900/2000 세기 구분
-    if gender_code in [1, 2]:
-        year = 1900 + yy
-    else:
-        year = 2000 + yy
-
-    birth_date = datetime(year, mm, dd)
-    today = datetime.today()
-    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
-    gender = "남" if gender_code % 2 == 1 else "여"
-    return year, mm, dd, gender, age
+        st.link_button("✉️ 이메일", f"mailto:{profile_data.get('이메일','')}")
+    if "카카오채널" in profile_data and profile_data["카카오채널"]:
+        st.link_button("💬 카카오톡 채널", profile_data["카카오채널"], use_container_width=True)
+    if "인스타그램" in profile_data and profile_data["인스타그램"]:
+        st.link_button("📷 인스타그램", profile_data["인스타그램"], use_container_width=True)
+    if "예약URL" in profile_data and profile_data["예약URL"]:
+        st.link_button("🗓 예약하기", profile_data["예약URL"], use_container_width=True)
+    if "지도URL" in profile_data and profile_data["지도URL"]:
+        st.link_button("📍 위치(네이버지도)", profile_data["지도URL"], use_container_width=True)
 
 # -----------------------------
 # CSS
 # -----------------------------
-GLOBAL_CSS = f"""
+GLOBAL_CSS = """
 <style>
-.appview-container .main .block-container {{
-    padding-top: 0rem;
-    padding-bottom: 0rem;
-}}
-.menu-grid {{
-    height: 100vh;
-    width: 100%; /* Changed from 100vw to 100% to prevent overflow */
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;   /* 세로 가운데 */
-    align-items: center;       /* 가로 가운데 */
-}}
-.menu-card {{
-    height: 25vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-weight: 800;
-    font-size: clamp(20px, 5vw, 28px);
-    letter-spacing: 0.4px;
-    color: {TEXT_COLOR};
-    user-select: none;
-    text-decoration: none !important;
-}}
-.menu-card:active {{
-    filter: brightness(0.95);
-    transform: scale(0.996);
-}}
-.menu-1 {{ background: {COLOR_1}; }}
-.menu-2 {{ background: {COLOR_2}; }}
-.menu-3 {{ background: {COLOR_3}; }}
-.menu-4 {{ background: {COLOR_4}; }}
-.menu-card a {{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    text-decoration: none !important;
-    color: {TEXT_COLOR} !important;
-}}
-.menu-icon {{
-    margin-right: 12px;
-    font-size: 1.2em;
-}}
-.content {{
-    padding: 16px 8px 32px;
-}}
-.info-card {{
-    border-radius: 16px;
-    padding: 16px;
-    background: #ffffff;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-    border: 1px solid rgba(0,0,0,0.05);
-}}
-.info-title {{
-    font-weight: 700;
-    margin-bottom: 8px;
-}}
-.info-row {{
-    margin: 6px 0;
-    line-height: 1.6;
-    font-size: 16px;
-}}
-.badge {{
-    display:inline-block;
-    background:#f2f4f7;
-    padding:2px 8px;
-    border-radius:999px;
-    font-size:12px;
-    margin-left:6px;
-    vertical-align: middle;
-}}
+.appview-container .main .block-container { padding-top: 0rem; padding-bottom: 0rem; }
+.menu-grid { height: 100vh; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.menu-card { height: 25vh; width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: clamp(20px, 5vw, 28px); letter-spacing: 0.4px; color: #FFFFFF; user-select: none; text-decoration: none !important; }
+.menu-card:active { filter: brightness(0.95); transform: scale(0.996); }
+.menu-1 { background: #2F80ED; }
+.menu-2 { background: #27AE60; }
+.menu-3 { background: #F2994A; }
+.menu-4 { background: #EB5757; }
+.menu-card a { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; text-decoration: none !important; color: #FFFFFF !important; }
+.menu-icon { margin-right: 12px; font-size: 1.2em; }
+.content { padding: 16px 8px 32px; }
+.info-card { border-radius: 16px; padding: 16px; background: #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); }
+.info-title { font-weight: 700; margin-bottom: 8px; }
+.info-row { margin: 6px 0; line-height: 1.6; font-size: 16px; }
+.badge { display:inline-block; background:#f2f4f7; padding:2px 8px; border-radius:999px; font-size:12px; margin-left:6px; vertical-align: middle; }
 </style>
 """
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
 # -----------------------------
+# Career 요약 & Context 생성
+# -----------------------------
+def summarize_career(df, max_len=300):
+    summary_lines = []
+    for _, row in df.iterrows():
+        detail = str(row["상세 내용"]).replace("\\n", "\n")
+        if len(detail) > max_len:
+            detail = detail[:max_len] + "..."
+        summary_lines.append(
+            f"- {row['기간']} | {row['회사/기관']} | {row['직무']} | {detail}"
+        )
+    return "\n".join(summary_lines)
+
+def build_context(profile, career_df):
+    lines = []
+    lines.append("### [프로필]")
+    for k, v in profile.items():
+        lines.append(f"{k}: {v}")
+
+    lines.append("\n### [경력 요약]")
+    lines.append(summarize_career(career_df, max_len=300))
+
+    return "\n".join(lines)
+
+# -----------------------------
+# GPT 답변 함수
+# -----------------------------
+def get_openai_answer(user_input, profile, career_df):
+    profile_name = profile.get('이름', '사용자')
+    context = build_context(profile, career_df)
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        f"너는 {profile_name}님의 자기소개 챗봇입니다.\n"
+                        f"아래 프로필(자기소개 시트)과 경력 요약(경력기술서 시트)을 참고해서만 답변하세요.\n"
+                        f"답변은 핵심만, 3~4문장 이내로 간결하게 작성하세요.\n"
+                        f"출처는 '(출처: 자기소개/경력기술서)' 라고 반드시 답변 마지막에 붙이세요.\n\n{context}"
+                    )
+                },
+                {"role": "user", "content": user_input}
+            ],
+            temperature=0.5,
+            max_tokens=250
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"오류 발생: {e}"
+
+# -----------------------------
 # Views
 # -----------------------------
 def view_home():
-    st.markdown(
-        f"""
+    st.markdown(f"""
         <div class="menu-grid">
             <div class="menu-card menu-1">
-                <a href="?{urlencode({"route": "about"})}"><span class="menu-icon">🧑</span>소개</a>
+                <a href="?{urlencode({'route': 'about'})}"><span class="menu-icon">🧑</span>소개</a>
             </div>
             <div class="menu-card menu-2">
-                <a href="?{urlencode({"route": "shorts"})}"><span class="menu-icon">🎬</span>쇼츠 영상</a>
+                <a href="?{urlencode({'route': 'shorts'})}"><span class="menu-icon">🎬</span>쇼츠 영상</a>
             </div>
             <div class="menu-card menu-3">
-                <a href="?{urlencode({"route": "career"})}"><span class="menu-icon">🏆</span>상세 영상</a>
+                <a href="?{urlencode({'route': 'career'})}"><span class="menu-icon">🏆</span>경력 상세</a>
             </div>
             <div class="menu-card menu-4">
-                <a href="?{urlencode({"route": "contact"})}"><span class="menu-icon">📍</span>질문</a>
+                <a href="?{urlencode({'route': 'contact'})}"><span class="menu-icon">📍</span>질문</a>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+    """, unsafe_allow_html=True)
 
 def view_about():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 소개 (About Me)")
 
-    if PROFILE_PHOTO_URL:
-        st.image(PROFILE_PHOTO_URL, width=140)
+    birth_str = profile_data.get("생년월일", "")
+    gender_str = profile_data.get("성별", "")
+    year, mm, dd, gender, age = parse_birth_info(birth_str, gender_str)
 
-    # 생년월일 + 성별 계산
-    year, mm, dd, gender, age = parse_birth_info(BIRTH_INPUT)
+    if isinstance(year, int) and isinstance(mm, int) and isinstance(dd, int):
+        birth_display = f"{year}-{mm:02d}-{dd:02d} ({gender})"
+    else:
+        birth_display = f"{birth_str} ({gender})"
 
-    # 기본 정보 카드
-    st.markdown(
-        f"""
+    st.markdown(f"""
         <div class="info-card">
             <div class="info-title">기본 정보</div>
-            <div class="info-row">👤 <b>이름</b>: {PROFILE_NAME}</div>
-            <div class="info-row">🎂 <b>생년월일</b>: {year}-{mm:02d}-{dd:02d} ({gender})</div>
-            <div class="info-row">📏 <b>나이</b>: {age}세</div>
-            <div class="info-row">💼 <b>직업</b>: 자동화개발자</div>
+            <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
+            <div class="info-row">🎂 생년월일: {birth_display}</div>
+            <div class="info-row">📏 나이: {age}세</div>
+            <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
+            <div class="info-row">🏷 한줄 소개: {profile_data.get('한줄 소개 /태그라인', '-')}</div>
+            <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # 경력 카드
-    st.markdown(
-        """
-        <div class="info-card">
-            <div class="info-title">경력</div>
-            <div class="info-row">• 삼성전자 RPA 개발·운영 <span class="badge">2018 ~ 2022</span></div>
-            <div class="info-row">• 삼성전자 DS 현업 교육 <span class="badge">2023 ~ 2025.08</span></div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """, unsafe_allow_html=True)
 
     st.divider()
     st.markdown("### 연락")
@@ -245,39 +224,88 @@ def view_shorts():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 쇼츠 / 리일스")
-    st.markdown("가볍게 볼 수 있는 1분 내외의 짧은 영상입니다.")
-
-    # 세로 9:16 비율로 맞춘 영상 (가운데 정렬)
-    st.markdown(
-        f"""
-            <div style="display: flex; justify-content: center; margin-top: 16px;">
-                <video style="width: 360px; aspect-ratio: 9 / 16; border-radius: 12px;" 
-                       controls autoplay loop muted>
-                    <source src="{SHORTS_VIDEO_URL}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            """,
-        unsafe_allow_html=True
-    )
-
+    st.video(profile_data.get("SHORTS_VIDEO_URL", ""))
     st.markdown('</div>', unsafe_allow_html=True)
 
 def view_career():
     back_to_home()
-    st.markdown('<div class="content">', unsafe_allow_html=True)
-    st.markdown("## 경력 소개 (2~3분)")
-    st.markdown("""
-- 주요 프로젝트/교육/협업 사례를 영상으로 정리했습니다.
-- 신뢰와 전문성을 한 번에 확인하세요.
-""")
-    st.video(CAREER_VIDEO_URL)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("## 경력 상세")
+
+    for _, row in career_data.iterrows():
+        detail = str(row["상세 내용"]).replace("\\n", "\n")
+        st.markdown(f"""
+        - 📅 **{row['기간']}**  
+          🏢 {row['회사/기관']}  
+          💼 {row['직무']}  
+          📝 {detail}
+        """)
+        st.divider()
 
 def view_contact():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
-    st.markdown("## 예약 & 연락 / 위치")
+    st.markdown("## 챗봇 & 연락 / 위치")
+
+    # FAQ 퀵버튼
+    faq = [
+        "간단히 자기소개 해주세요",
+        "경력/프로젝트를 알려주세요",
+        "나이가 어떻게 되나요",
+        "사는곳이 어디에요",
+    ]
+    st.caption("빠른 질문:")
+    faq_cols = st.columns(len(faq))
+    for i, q in enumerate(faq):
+        if faq_cols[i].button(q, key=f"faq_btn_{i}"):
+            st.session_state["contact_draft"] = q
+            st.rerun()
+
+    if "contact_chat_history" not in st.session_state:
+        st.session_state.contact_chat_history = []
+    if "contact_question_count" not in st.session_state:
+        st.session_state.contact_question_count = 0
+    if "contact_draft" not in st.session_state:
+        st.session_state.contact_draft = ""
+
+    MAX_Q = 3
+
+    if st.session_state.contact_question_count >= MAX_Q:
+        st.warning(f"질문은 최대 {MAX_Q}회까지 가능합니다.")
+    else:
+        with st.form(key="contact_chat_form"):
+            user_input = st.text_input(
+                "질문을 입력하세요:",
+                value=st.session_state.contact_draft
+            )
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                submit_button = st.form_submit_button("전송")
+            with col2:
+                reset_button = st.form_submit_button("초기화")
+
+        if submit_button and user_input.strip():
+            answer = get_openai_answer(user_input.strip(), profile_data, career_data)
+            st.session_state.contact_chat_history.append(
+                {"user": user_input.strip(), "bot": answer}
+            )
+            st.session_state.contact_question_count += 1
+            st.session_state.contact_draft = ""
+
+        if reset_button:
+            st.session_state.contact_chat_history = []
+            st.session_state.contact_question_count = 0
+            st.session_state.contact_draft = ""
+            st.rerun()
+
+    if st.session_state.contact_chat_history:
+        st.divider()
+        for chat in reversed(st.session_state.contact_chat_history):
+            st.markdown(f"**나:** {chat['user']}")
+            st.markdown(f"**챗봇:** {chat['bot']}")
+            st.markdown("---")
+
+    st.divider()
+    st.markdown("### 연락")
     contact_buttons()
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -300,5 +328,5 @@ else:
     set_route("home")
     view_home()
 
-# Small footer
-st.caption(f"© {PROFILE_NAME} — 모바일 퍼스트 QR 랜딩")
+# Footer
+st.caption(f"© {profile_data.get('이름','')} — 자기소개")
