@@ -227,7 +227,17 @@ def view_shorts():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 쇼츠 / 리일스")
-    st.video(SHORTS_VIDEO_URL)  # ✅ 변수 그대로 사용
+
+    video_html = f"""
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <video controls style="height: 50vh; max-width: 90%;">
+            <source src="{SHORTS_VIDEO_URL}" type="video/mp4">
+            브라우저가 동영상을 지원하지 않습니다.
+        </video>
+    </div>
+    """
+    st.markdown(video_html, unsafe_allow_html=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 def view_career():
