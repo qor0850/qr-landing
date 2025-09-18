@@ -8,6 +8,7 @@ from openai import OpenAI
 # OpenAI 설정
 # -----------------------------
 client = OpenAI(api_key=st.secrets["api_key"])
+
 # -----------------------------
 # Config
 # -----------------------------
@@ -102,11 +103,14 @@ GLOBAL_CSS = """
 .menu-grid { height: 100vh; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .menu-card { height: 25vh; width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: clamp(20px, 5vw, 28px); letter-spacing: 0.4px; color: #FFFFFF; user-select: none; text-decoration: none !important; }
 .menu-card:active { filter: brightness(0.95); transform: scale(0.996); }
-.menu-1 { background: #2F80ED; }
-.menu-2 { background: #27AE60; }
-.menu-3 { background: #F2994A; }
-.menu-4 { background: #EB5757; }
-.menu-card a { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; text-decoration: none !important; color: #FFFFFF !important; }
+
+/* 🎨 파스텔 톤 적용 */
+.menu-1 { background: #A8D8EA; }  /* 파스텔 블루 */
+.menu-2 { background: #B8E0D2; }  /* 파스텔 민트 */
+.menu-3 { background: #FBC4AB; }  /* 파스텔 코랄 */
+.menu-4 { background: #FFB5E8; }  /* 파스텔 핑크 */
+
+.menu-card a { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; text-decoration: none !important; color: #333333 !important; } /* 글씨는 진한 회색으로 */
 .menu-icon { margin-right: 12px; font-size: 1.2em; }
 .content { padding: 16px 8px 32px; }
 .info-card { border-radius: 16px; padding: 16px; background: #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); }
@@ -175,6 +179,20 @@ def get_openai_answer(user_input, profile, career_df):
 # Views
 # -----------------------------
 def view_home():
+    st.markdown("""
+        <div style="text-align:center; padding:20px; margin-bottom:20px;">
+            <h2>⚙️ 이 사이트는 다음 기술로 제작되었습니다</h2>
+            <p style="font-size:16px; line-height:1.6;">
+                🖥 <b>Streamlit</b> → 웹 UI/UX 제작<br>
+                📊 <b>Google Sheets + Pandas</b> → 데이터 관리 및 불러오기<br>
+                🤖 <b>OpenAI GPT API</b> → 챗봇 응답 생성<br>
+                🎨 <b>HTML + CSS</b> → UI 커스터마이징<br>
+                💾 <b>Session State</b> → 대화 기록, 질문 횟수 제한 관리<br>
+                ☁️ <b>Streamlit Cloud + GitHub</b> → 배포 및 운영, Secrets 통한 보안 관리
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.markdown(f"""
         <div class="menu-grid">
             <div class="menu-card menu-1">
