@@ -227,7 +227,7 @@ def view_shorts():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 쇼츠 / 리일스")
-    st.video(profile_data.get(SHORTS_VIDEO_URL, ""))
+    st.video(SHORTS_VIDEO_URL)  # ✅ 변수 그대로 사용
     st.markdown('</div>', unsafe_allow_html=True)
 
 def view_career():
