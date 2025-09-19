@@ -85,12 +85,12 @@ def contact_buttons():
         st.link_button("📞 전화하기", f"tel:{profile_data.get('연락처','')}")
     with cols[1]:
         st.link_button("✉️ 이메일", f"mailto:{profile_data.get('이메일','')}")
-    if "카카오채널" in profile_data and profile_data["카카오채널"]:
-        st.link_button("💬 카카오톡 채널", profile_data["카카오채널"], use_container_width=True)
-    if "인스타그램" in profile_data and profile_data["인스타그램"]:
-        st.link_button("📷 인스타그램", profile_data["인스타그램"], use_container_width=True)
-    if "예약URL" in profile_data and profile_data["예약URL"]:
-        st.link_button("🗓 예약하기", profile_data["예약URL"], use_container_width=True)
+    # if "카카오채널" in profile_data and profile_data["카카오채널"]:
+    #     st.link_button("💬 카카오톡 채널", profile_data["카카오채널"], use_container_width=True)
+    # if "인스타그램" in profile_data and profile_data["인스타그램"]:
+    #     st.link_button("📷 인스타그램", profile_data["인스타그램"], use_container_width=True)
+    # if "예약URL" in profile_data and profile_data["예약URL"]:
+    #     st.link_button("🗓 예약하기", profile_data["예약URL"], use_container_width=True)
     if "지도URL" in profile_data and profile_data["지도URL"]:
         st.link_button("📍 위치(네이버지도)", profile_data["지도URL"], use_container_width=True)
 
@@ -231,7 +231,8 @@ def view_about():
             <div class="info-row">🎂 생년월일: {birth_display}</div>
             <div class="info-row">📏 나이: {age}세</div>
             <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
-            <div class="info-row">🏷 한줄 소개: {profile_data.get('한줄 소개 /태그라인', '-')}</div>
+            <div class="info-row">🏷 한 줄 소개: {profile_data.get('한 줄 소개 /태그라인', '-')}</div>
+            <div class="info-row">🏷 사용 RPA튤: {profile_data.get('사용 RPA튤', '-')}</div>
             <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
         </div>
         """, unsafe_allow_html=True)
