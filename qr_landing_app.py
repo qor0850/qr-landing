@@ -34,6 +34,8 @@ SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/m
 def load_profile_sheet(url):
     df = pd.read_csv(url)
     keys = df.iloc[:, 0].astype(str).str.strip()
+    # 공백 제거 + 소문자 변환
+    keys = keys.str.lower().str.replace(" ", "")
     vals = df.iloc[:, 1].astype(str).str.strip()
     return dict(zip(keys, vals))
 
@@ -231,8 +233,8 @@ def view_about():
             <div class="info-row">🎂 생년월일: {birth_display}</div>
             <div class="info-row">📏 나이: {age}세</div>
             <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
-            <div class="info-row">🏷 한 줄 소개: {profile_data.get('한 줄 소개 /태그라인', '-')}</div>
-            <div class="info-row">🏷 사용 RPA튤: {profile_data.get('사용 RPA튤', '-')}</div>
+            <div class="info-row">🏷 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
+            <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
             <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
         </div>
         """, unsafe_allow_html=True)
