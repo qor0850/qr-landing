@@ -10,6 +10,13 @@ from openai import OpenAI
 client = OpenAI(api_key=st.secrets["api_key"])
 
 
+# Config
+# -----------------------------
+st.set_page_config(
+    page_title="QR Landing",
+    page_icon="📇",
+    layout="wide",
+)
 
 # -----------------------------
 # Google Sheets URL
