@@ -9,7 +9,7 @@ from openai import OpenAI
 # -----------------------------
 client = OpenAI(api_key=st.secrets["api_key"])
 
-
+# -----------------------------
 # Config
 # -----------------------------
 st.set_page_config(
@@ -23,6 +23,7 @@ st.set_page_config(
 # -----------------------------
 PROFILE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1eOApzLbogOSx68xf7d3Wj0xs-7acj9HKLDM5GXMR4P0/export?format=csv&gid=0"
 CAREER_SHEET_URL = "https://docs.google.com/spreadsheets/d/18ohr0sXHqPYu0Bzk8UCQUsKGNCIUHoAEQm0FA7IrdKA/export?format=csv&gid=0"
+MBTI_SHEET_URL = "https://docs.google.com/spreadsheets/d/1GJ1gQfkArBmiI4Kus8Isl8mkCIGMxNLSb9Bw6KvKSVU/export?format=csv&gid=0"
 
 # Video URLs (YouTube recommended)
 SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/shots.mp4"
@@ -38,7 +39,11 @@ def load_profile_sheet(url):
 def load_career_sheet(url):
     ...
 
+@st.cache_data(ttl=300)
+def load_mbti_sheet(url):
+    return pd.read_csv(url, encoding="utf-8-sig")
 
+mbti_data = load_mbti_sheet(MBTI_SHEET_URL)
 # -----------------------------
 # 데이터 로드
 # -----------------------------
@@ -54,6 +59,35 @@ def load_profile_sheet(url):
 @st.cache_data
 def load_career_sheet(url):
     return pd.read_csv(url)
+
+def get_mbti_summary(mbti_code):
+    row = mbti_data[mbti_data["MBTI"] == mbti_code.upper()]
+    if row.empty:
+        return None
+
+    # ✅ 엑셀 컬럼 구조 그대로 출력
+    return f"""
+    ### 🌟 {row['MBTI'].values[0]} ({row['별칭'].values[0]})
+    **주요 특징**: {row['주요 특징'].values[0]}  
+    **강점**: {row['강점'].values[0]}  
+    **약점**: {row['약점'].values[0]}  
+    **잘 맞는 분야**: {row['잘 맞는 분야'].values[0]}  
+    (출처: MBTI 시트)
+    """
+    #
+    # row = mbti_data[mbti_data["MBTI"] == mbti_code.upper()]
+    # if row.empty:
+    #     return "해당 MBTI 데이터가 없습니다."
+    #
+    # return f"""
+    # 🌟 {row['MBTI'].values[0]} ({row['별칭'].values[0]})
+    # - 주요 특징: {row['주요 특징'].values[0]}
+    # - 강점: {row['강점'].values[0]}
+    # - 약점: {row['약점'].values[0]}
+    # - 대인관계: {row['대인관계'].values[0]}
+    # - 잘 맞는 분야: {row['잘 맞는 분야'].values[0]}
+    # """
+
 
 profile_data = load_profile_sheet(PROFILE_SHEET_URL)
 career_data = load_career_sheet(CAREER_SHEET_URL)
@@ -161,12 +195,63 @@ def build_context(profile, career_df):
     return "\n".join(lines)
 
 # -----------------------------
+# MBTI 요약 함수
+# -----------------------------
+def get_mbti_summary(mbti_code):
+    row = mbti_data[mbti_data["MBTI"] == mbti_code.upper()]
+    if row.empty:
+        return None
+
+    return f"""
+    🌟 {row['MBTI'].values[0]} ({row['별칭'].values[0]})
+    - 주요 특징: {row['주요 특징'].values[0]}
+    - 강점: {row['강점'].values[0]}
+    - 약점: {row['약점'].values[0]}
+    - 잘 맞는 분야: {row['잘 맞는 분야'].values[0]}
+    (출처: MBTI 시트)
+    """
+# -----------------------------
 # GPT 답변 함수
 # -----------------------------
 def get_openai_answer(user_input, profile, career_df):
     profile_name = profile.get('이름', '사용자')
     context = build_context(profile, career_df)
 
+    # MBTI 관련 질문일 경우
+    mbti_keywords = ["mbti", "성격", "유형"]
+    if any(k in user_input.lower() for k in mbti_keywords):
+        my_mbti = profile.get("mbti", "").upper()  # ✅ 프로필 시트에서 내 MBTI 가져오기
+
+        if my_mbti and my_mbti in mbti_data["MBTI"].values:
+            summary = get_mbti_summary(my_mbti)
+
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": (
+                            f"너는 MBTI 성격 전문가 챗봇입니다.\n"
+                            f"아래 MBTI 정보를 참고해서 사용자에게 설명해줘.\n"
+                            f"출처는 '(출처: MBTI 시트)' 라고 반드시 마지막에 붙여."
+                        )},
+                        {"role": "user", "content": f"내 MBTI({my_mbti}) 특징을 쉽게 요약해서 설명해줘:\n\n{summary}"}
+                    ],
+                    temperature=0.6,
+                    max_tokens=300
+                )
+                explanation = response.choices[0].message.content.strip()
+
+                # ✅ 내 MBTI만 출력
+                st.markdown(summary)
+                st.markdown("💡 추가 설명:")
+                st.markdown(explanation)
+                return None
+            except Exception as e:
+                return summary + f"\n\n(추가 설명 오류: {e})"
+        else:
+            return "⚠️ 프로필에 MBTI 정보가 없습니다. (출처: MBTI 시트)"
+
+    # 일반 질문 → 기본 프로필 기반
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -188,6 +273,7 @@ def get_openai_answer(user_input, profile, career_df):
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"오류 발생: {e}"
+
 
 # -----------------------------
 # Views
@@ -306,8 +392,9 @@ def view_contact():
     faq = [
         "간단히 자기소개 해주세요",
         "경력/프로젝트를 알려주세요",
-        "나이가 어떻게 되나요",
-        "사는곳이 어디에요",
+        "MBTI가 어떻게 되나요?",
+        "취미는 뭐에요?",
+        "사는곳이 어디에요"
     ]
     st.caption("빠른 질문:")
     faq_cols = st.columns(len(faq))
