@@ -9,14 +9,7 @@ from openai import OpenAI
 # -----------------------------
 client = OpenAI(api_key=st.secrets["api_key"])
 
-# -----------------------------
-# Config
-# -----------------------------
-st.set_page_config(
-    page_title="QR Landing",
-    page_icon="📇",
-    layout="wide",
-)
+
 
 # -----------------------------
 # Google Sheets URL
@@ -26,6 +19,18 @@ CAREER_SHEET_URL = "https://docs.google.com/spreadsheets/d/18ohr0sXHqPYu0Bzk8UCQ
 
 # Video URLs (YouTube recommended)
 SHORTS_VIDEO_URL = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/shots.mp4"
+
+# -----------------------------
+# 데이터 로드 (5분마다 자동 갱신)
+# -----------------------------
+@st.cache_data(ttl=300)  # 5분마다 초기화
+def load_profile_sheet(url):
+    ...
+
+@st.cache_data(ttl=300)  # 5분마다 초기화
+def load_career_sheet(url):
+    ...
+
 
 # -----------------------------
 # 데이터 로드
@@ -279,6 +284,16 @@ def view_contact():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 챗봇 & 연락 / 위치")
+
+
+
+    st.divider()
+    st.markdown("### 연락")
+    contact_buttons()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # ✅ 여기 안내 문구 추가
+    st.caption("⏱️ 구글 시트 데이터는 5분마다 자동 갱신됩니다.")
 
     # FAQ 퀵버튼
     faq = [
