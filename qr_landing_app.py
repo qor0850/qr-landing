@@ -283,12 +283,14 @@ def view_home():
         <div style="text-align:center; padding:20px; margin-bottom:20px;">
             <h2>⚙️ 이 사이트는 다음 기술로 제작되었습니다</h2>
             <p style="font-size:16px; line-height:1.6;">
-                🖥 <b>Streamlit</b> → 웹 UI/UX 제작<br>
+                🖥  <b>Streamlit</b> → 웹 UI/UX 제작<br>
                 📊 <b>Google Sheets + Pandas</b> → 데이터 관리 및 불러오기<br>
-                🤖 <b>OpenAI GPT API</b> → 챗봇 응답 생성<br>
+                🤖 <b>OpenAI GPT API</b> → 챗봇 응답 생성 및 장소 추천 로직 구현<br>
                 🎨 <b>HTML + CSS</b> → UI 커스터마이징<br>
                 💾 <b>Session State</b> → 대화 기록, 질문 횟수 제한 관리<br>
-                ☁️ <b>Streamlit Cloud + GitHub</b> → 배포 및 운영, Secrets 통한 보안 관리
+                ☁️ <b>Streamlit Cloud + GitHub</b> → 배포 및 운영, Secrets 통한 보안 관리<br>
+                🌎 <b>지도 검색 API + 자동 링크 생성</b> → 맛집·여행지 관련 지도 URL 동적 생성<br>
+                🍽️ <b>GPT + 지역 선택 UI</b> → 지역 기반 맛집·여행지 추천 엔진 구축
             </p>
         </div>
         """, unsafe_allow_html=True)
