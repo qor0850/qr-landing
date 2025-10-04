@@ -299,13 +299,13 @@ def view_home():
                 <a href="?{urlencode({'route': 'about'})}"><span class="menu-icon">🧑</span>소개</a>
             </div>
             <div class="menu-card menu-2">
-                <a href="?{urlencode({'route': 'shorts'})}"><span class="menu-icon">🎬</span>쇼츠 영상</a>
+                <a href="?{urlencode({'route': 'career'})}"><span class="menu-icon">🎬</span>경력 상세</a>
             </div>
             <div class="menu-card menu-3">
-                <a href="?{urlencode({'route': 'career'})}"><span class="menu-icon">🏆</span>경력 상세</a>
+                <a href="?{urlencode({'route': 'contact'})}"><span class="menu-icon">🏆</span>질문</a>
             </div>
             <div class="menu-card menu-4">
-                <a href="?{urlencode({'route': 'contact'})}"><span class="menu-icon">📍</span>질문</a>
+                <a href="?{urlencode({'route': 'etc'})}"><span class="menu-icon">📍</span>기타</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -342,22 +342,22 @@ def view_about():
     contact_buttons()
     st.markdown('</div>', unsafe_allow_html=True)
 
-def view_shorts():
-    back_to_home()
-    st.markdown('<div class="content">', unsafe_allow_html=True)
-    st.markdown("## 쇼츠 / 리일스")
+# def view_shorts():
+#     back_to_home()
+#     st.markdown('<div class="content">', unsafe_allow_html=True)
+#     st.markdown("## 쇼츠 / 리일스")
 
-    video_html = f"""
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-        <video controls style="height: 50vh; max-width: 90%;">
-            <source src="{SHORTS_VIDEO_URL}" type="video/mp4">
-            브라우저가 동영상을 지원하지 않습니다.
-        </video>
-    </div>
-    """
-    st.markdown(video_html, unsafe_allow_html=True)
+#     video_html = f"""
+#     <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+#         <video controls style="height: 50vh; max-width: 90%;">
+#             <source src="{SHORTS_VIDEO_URL}" type="video/mp4">
+#             브라우저가 동영상을 지원하지 않습니다.
+#         </video>
+#     </div>
+#     """
+#     st.markdown(video_html, unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+#     st.markdown('</div>', unsafe_allow_html=True)
 
 def view_career():
     back_to_home()
@@ -452,6 +452,139 @@ def view_contact():
     contact_buttons()
     st.markdown('</div>', unsafe_allow_html=True)
 
+def view_etc():
+    back_to_home()
+    st.markdown("## 📎 주요 도시 맛집 / 여행지 추천")
+
+    # ✅ 1단계: 시/도 선택
+    sido_list = [
+        "서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시",
+        "대전광역시", "울산광역시", "세종특별자치시", "경기도", "강원특별자치도",
+        "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주특별자치도"
+    ]
+    sido = st.selectbox("📍 1단계: 시/도 선택", sido_list)
+
+    # ✅ 2단계: 주요 도시 선택
+    city_options = {
+        "서울특별시": ["강남구", "송파구", "마포구", "종로구"],
+        "부산광역시": ["해운대구", "남구", "중구", "수영구"],
+        "대구광역시": ["중구", "수성구", "달서구"],
+        "인천광역시": ["남동구", "연수구", "중구"],
+        "광주광역시": ["동구", "서구", "북구"],
+        "대전광역시": ["유성구", "서구", "중구"],
+        "울산광역시": ["남구", "동구", "중구"],
+        "세종특별자치시": ["세종시"],
+        "경기도": ["수원시", "성남시", "용인시", "고양시", "부천시"],
+        "강원특별자치도": ["춘천시", "강릉시", "원주시"],
+        "충청북도": ["청주시", "충주시"],
+        "충청남도": ["천안시", "아산시", "공주시"],
+        "전라북도": ["전주시", "익산시"],
+        "전라남도": ["목포시", "여수시", "순천시"],
+        "경상북도": ["포항시", "경주시", "구미시"],
+        "경상남도": ["창원시", "김해시", "진주시"],
+        "제주특별자치도": ["제주시", "서귀포시"]
+    }
+    city_list = city_options.get(sido, [])
+    city = st.selectbox("📍 2단계: 주요 도시 선택", city_list)
+
+    # ✅ 3단계: 동 선택 (5개만 예시)
+    dong_options = {
+        "강남구": ["역삼동", "논현동", "신사동", "대치동", "청담동"],
+        "송파구": ["잠실동", "문정동", "방이동", "가락동", "석촌동"],
+        "마포구": ["홍대입구동", "상수동", "망원동", "연남동", "공덕동"],
+        "종로구": ["삼청동", "인사동", "익선동", "부암동", "평창동"],
+        "해운대구": ["중동", "좌동", "우동", "송정동", "재송동"],
+        "남구": ["대연동", "문현동", "용호동", "용당동", "우암동"],
+        "중구": ["남포동", "광복동", "보수동", "동광동", "대청동"],
+        "수영구": ["광안동", "남천동", "수영동", "망미동", "민락동"],
+        "수원시": ["영통동", "매탄동", "인계동", "팔달동", "권선동"],
+        "성남시": ["분당동", "야탑동", "정자동", "수내동", "이매동"],
+        "전주시": ["효자동", "중화산동", "금암동", "서신동", "인후동"],
+        "포항시": ["장성동", "죽도동", "두호동", "양덕동", "상도동"],
+        "창원시": ["상남동", "용호동", "성산동", "반송동", "중앙동"],
+        "제주시": ["연동", "이도동", "노형동", "화북동", "삼양동"],
+    }
+    dong_list = dong_options.get(city, [])
+    dong = st.selectbox("📍 3단계: 동 선택 (대표 5곳)", dong_list)
+
+    # ✅ 추천 종류 선택
+    category = st.radio("🍽️ 추천 종류를 선택하세요", ["맛집 추천 🍲", "여행지 추천 🏝️"])
+
+    # ✅ 추천 버튼
+    if st.button("🔍 추천 보기"):
+        full_location = f"{sido} {city} {dong}"
+        with st.spinner("AI가 추천 중입니다..."):
+            result = get_place_recommendation(full_location, category)
+            st.markdown(result)
+
+        # ✅ 관련 링크 자동 생성
+        keyword = "맛집" if "맛집" in category else "여행지"
+        naver_map_url = f"https://map.naver.com/p/search/{full_location}%20{keyword}"
+        kakao_map_url = f"https://map.kakao.com/?q={full_location}%20{keyword}"
+        google_map_url = f"https://www.google.com/maps/search/{full_location}+{keyword}"
+
+        st.markdown("### 📍 관련 링크")
+        st.markdown(f"🔎 [네이버 지도에서 보기]({naver_map_url})")
+        st.markdown(f"🗺️ [카카오맵에서 보기]({kakao_map_url})")
+        st.markdown(f"🌍 [Google Maps에서 보기]({google_map_url})")
+
+
+def get_place_recommendation(location, category):
+    """GPT가 음식종류 + 설명을 포함한 추천을 반환하고, 각 장소에 지도 URL을 자동 생성"""
+    try:
+        if "맛집" in category:
+            prompt = f"""
+            {location} 지역에서 현지인도 자주 찾는 맛집 3곳을 추천해줘.
+            각 줄은 아래 형식으로 출력해:
+            1. 음식점이름 | 음식종류 | 한 줄 설명
+            """
+        else:
+            prompt = f"""
+            {location} 지역에서 하루 여행 코스로 좋은 여행지 3곳을 추천해줘.
+            각 줄은 아래 형식으로 출력해:
+            1. 장소이름 | 특징 | 한 줄 설명
+            """
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "너는 한국 맛집 및 여행지 추천 전문가야. 반드시 지정된 형식으로만 출력해."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=500
+        )
+
+        raw_text = response.choices[0].message.content.strip()
+
+        # 줄 단위로 분리
+        lines = [l for l in raw_text.split("\n") if l.strip()]
+        result_md = "### 🍽️ 추천 결과\n\n"
+
+        for line in lines:
+            # 줄을 "이름 | 음식종류 | 설명"으로 분리
+            parts = [p.strip() for p in line.strip("0123456789. ").split("|")]
+            if len(parts) < 3:
+                continue
+
+            name, category_info, desc = parts[0], parts[1], parts[2]
+
+            # 지도 검색 URL 자동 생성
+            naver_url = f"https://map.naver.com/p/search/{name}"
+            kakao_url = f"https://map.kakao.com/?q={name}"
+            google_url = f"https://www.google.com/maps/search/{name}"
+
+            # 추천 결과 마크다운 구성
+            result_md += f"🍴 **{name}**  \n"
+            result_md += f"📍 음식 종류: {category_info}  \n"
+            result_md += f"💡 설명: {desc}  \n"
+            result_md += f"🔗 [네이버 지도]({naver_url}) | 🗺️ [카카오맵]({kakao_url}) | 🌍 [Google Maps]({google_url})\n\n"
+
+        return result_md if result_md.strip() else "⚠️ 추천 정보를 불러오지 못했습니다."
+
+    except Exception as e:
+        return f"⚠️ 추천을 불러오는 중 오류 발생: {e}"
+
 # -----------------------------
 # App Router
 # -----------------------------
@@ -461,12 +594,12 @@ if route == "home":
     view_home()
 elif route == "about":
     view_about()
-elif route == "shorts":
-    view_shorts()
 elif route == "career":
     view_career()
 elif route == "contact":
     view_contact()
+elif route == "etc":
+    view_etc()
 else:
     set_route("home")
     view_home()
