@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 from datetime import datetime
 import pandas as pd
 from openai import OpenAI
+import re
 
 # -----------------------------
 # OpenAI 설정
@@ -525,64 +526,76 @@ def view_etc():
         kakao_map_url = f"https://map.kakao.com/?q={full_location}%20{keyword}"
         google_map_url = f"https://www.google.com/maps/search/{full_location}+{keyword}"
 
-        st.markdown("### 📍 관련 링크")
-        st.markdown(f"🔎 [네이버 지도에서 보기]({naver_map_url})")
-        st.markdown(f"🗺️ [카카오맵에서 보기]({kakao_map_url})")
-        st.markdown(f"🌍 [Google Maps에서 보기]({google_map_url})")
+
 
 
 def get_place_recommendation(location, category):
-    """GPT가 음식종류 + 설명을 포함한 추천을 반환하고, 각 장소에 지도 URL을 자동 생성"""
+    """GPT가 맛집/여행지를 추천하고, 종류·소개·메인음식(또는 대표볼거리)·주소·관련링크를 함께 출력"""
     try:
+        # ✅ GPT에게 명확한 출력 형식 요청
         if "맛집" in category:
             prompt = f"""
-            {location} 지역에서 현지인도 자주 찾는 맛집 3곳을 추천해줘.
-            각 줄은 아래 형식으로 출력해:
-            1. 음식점이름 | 음식종류 | 한 줄 설명
+            {location} 지역의 현지인 추천 맛집 3곳을 아래 형식으로 소개해줘.
+            반드시 아래 형식 그대로 출력해:
+            1. 식당이름 | 음식 종류 | 한 줄 소개 | 대표 메뉴 | 주소
+            (예: 백민식당 | 한식 | 김치찌개가 맛있는 현지식당 | 김치찌개 | 서울 송파구 문정동 123-4)
             """
         else:
             prompt = f"""
-            {location} 지역에서 하루 여행 코스로 좋은 여행지 3곳을 추천해줘.
-            각 줄은 아래 형식으로 출력해:
-            1. 장소이름 | 특징 | 한 줄 설명
+            {location} 지역에서 하루 여행 코스로 좋은 여행지 3곳을 아래 형식으로 소개해줘.
+            반드시 아래 형식 그대로 출력해:
+            1. 장소이름 | 특징 | 한 줄 설명 | 대표 볼거리 | 주소
+            (예: 오죽헌 | 역사유적지 | 퇴계 이황의 생가로 유명한 유적지 | 유물전시관 | 강원 강릉시 율곡로 3139)
             """
 
+        # ✅ GPT 호출
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "너는 한국 맛집 및 여행지 추천 전문가야. 반드시 지정된 형식으로만 출력해."},
+                {"role": "system", "content": "너는 한국 맛집 및 여행지 추천 전문가야. 반드시 지정된 형식을 지켜."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=500
+            max_tokens=800
         )
 
         raw_text = response.choices[0].message.content.strip()
+        lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
 
-        # 줄 단위로 분리
-        lines = [l for l in raw_text.split("\n") if l.strip()]
+        # ✅ 추천 결과 제목
         result_md = "### 🍽️ 추천 결과\n\n"
 
         for line in lines:
-            # 줄을 "이름 | 음식종류 | 설명"으로 분리
-            parts = [p.strip() for p in line.strip("0123456789. ").split("|")]
-            if len(parts) < 3:
-                continue
+            # 1️⃣ 숫자 및 기호 제거
+            clean_line = re.sub(r"^\d+\.\s*", "", line)
+            # 2️⃣ 구분자 보정 (– 또는 - → |)
+            clean_line = clean_line.replace("–", "|").replace("-", "|")
+            # 3️⃣ 파이프 기준 분리
+            parts = [p.strip() for p in clean_line.split("|") if p.strip()]
 
-            name, category_info, desc = parts[0], parts[1], parts[2]
+            # 4️⃣ 필드 보완 (5개 미만일 경우 '정보 없음' 채움)
+            while len(parts) < 5:
+                parts.append("정보 없음")
 
-            # 지도 검색 URL 자동 생성
-            naver_url = f"https://map.naver.com/p/search/{name}"
-            kakao_url = f"https://map.kakao.com/?q={name}"
-            google_url = f"https://www.google.com/maps/search/{name}"
+            name, kind, desc, main, addr = parts[:5]
 
-            # 추천 결과 마크다운 구성
+            # 5️⃣ 지도 링크 자동 생성
+            from urllib.parse import quote_plus
+            qname = quote_plus(name)
+            naver_url  = f"https://map.naver.com/p/search/{qname}"
+            kakao_url  = f"https://map.kakao.com/?q={qname}"
+            google_url = f"https://www.google.com/maps/search/{qname}"
+
+            # 6️⃣ 출력 구성
             result_md += f"🍴 **{name}**  \n"
-            result_md += f"📍 음식 종류: {category_info}  \n"
-            result_md += f"💡 설명: {desc}  \n"
+            result_md += f"📍 종류: {kind}  \n"
+            result_md += f"💬 소개: {desc}  \n"
+            result_md += f"🍛 메인 음식: {main}  \n" if "맛집" in category else f"🎯 대표 볼거리: {main}  \n"
+            result_md += f"🏠 주소: {addr}  \n"
             result_md += f"🔗 [네이버 지도]({naver_url}) | 🗺️ [카카오맵]({kakao_url}) | 🌍 [Google Maps]({google_url})\n\n"
 
-        return result_md if result_md.strip() else "⚠️ 추천 정보를 불러오지 못했습니다."
+        # 7️⃣ 결과 반환
+        return result_md if lines else "⚠️ 추천 정보를 불러오지 못했습니다. 다시 시도해주세요."
 
     except Exception as e:
         return f"⚠️ 추천을 불러오는 중 오류 발생: {e}"
