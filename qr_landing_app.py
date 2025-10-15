@@ -318,6 +318,19 @@ def view_about():
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 소개 (About Me)")
 
+    # ✅ 프로필 사진
+    profile_img_url = profile_data.get("프로필사진url", "") or profile_data.get("프로필 사진 URL", "")
+    if profile_img_url:
+        st.markdown(
+            f"""
+                <div style="text-align:center; margin-bottom:20px;">
+                    <img src="백민.jpg" alt="프로필 사진" style="width:200px; height:200px; border-radius:50%; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                </div>
+                """,
+            unsafe_allow_html=True
+        )
+
+    # 기본 정보 표시
     birth_str = profile_data.get("생년월일", "")
     gender_str = profile_data.get("성별", "")
     year, mm, dd, gender, age = parse_birth_info(birth_str, gender_str)
@@ -328,22 +341,54 @@ def view_about():
         birth_display = f"{birth_str} ({gender})"
 
     st.markdown(f"""
-        <div class="info-card">
-            <div class="info-title">기본 정보</div>
-            <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
-            <div class="info-row">🎂 생년월일: {birth_display}</div>
-            <div class="info-row">📏 나이: {age}세</div>
-            <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
-            <div class="info-row">🏷 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
-            <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
-            <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
-        </div>
+            <div class="info-card">
+                <div class="info-title">기본 정보</div>
+                <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
+                <div class="info-row">🎂 생년월일: {birth_display}</div>
+                <div class="info-row">📏 나이: {age}세</div>
+                <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
+                <div class="info-row">🏷 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
+                <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
+                <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
+            </div>
         """, unsafe_allow_html=True)
 
     st.divider()
     st.markdown("### 연락")
     contact_buttons()
+    
     st.markdown('</div>', unsafe_allow_html=True)
+    
+    # back_to_home()
+    # st.markdown('<div class="content">', unsafe_allow_html=True)
+    # st.markdown("## 소개 (About Me)")
+
+    # birth_str = profile_data.get("생년월일", "")
+    # gender_str = profile_data.get("성별", "")
+    # year, mm, dd, gender, age = parse_birth_info(birth_str, gender_str)
+
+    # if isinstance(year, int) and isinstance(mm, int) and isinstance(dd, int):
+    #     birth_display = f"{year}-{mm:02d}-{dd:02d} ({gender})"
+    # else:
+    #     birth_display = f"{birth_str} ({gender})"
+
+    # st.markdown(f"""
+    #     <div class="info-card">
+    #         <div class="info-title">기본 정보</div>
+    #         <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
+    #         <div class="info-row">🎂 생년월일: {birth_display}</div>
+    #         <div class="info-row">📏 나이: {age}세</div>
+    #         <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
+    #         <div class="info-row">🏷 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
+    #         <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
+    #         <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
+    #     </div>
+    #     """, unsafe_allow_html=True)
+
+    # st.divider()
+    # st.markdown("### 연락")
+    # contact_buttons()
+    
 
 # def view_shorts():
 #     back_to_home()
