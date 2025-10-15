@@ -320,7 +320,7 @@ def view_about():
 
     # ✅ 프로필 사진
     profile_img_url = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/백민.jpg"
-
+    
     if profile_img_url:
         st.markdown(
             f"""
@@ -332,7 +332,6 @@ def view_about():
             """,
             unsafe_allow_html=True
         )
-
     # 기본 정보 표시
     birth_str = profile_data.get("생년월일", "")
     gender_str = profile_data.get("성별", "")
