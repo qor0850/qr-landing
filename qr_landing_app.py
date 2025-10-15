@@ -319,7 +319,7 @@ def view_about():
     st.markdown("## 소개 (About Me)")
 
     # ✅ 프로필 사진
-    profile_img_url = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/백민.jpg"
+    profile_img_url = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/baekmin.jpg"
     
     if profile_img_url:
         st.markdown(
