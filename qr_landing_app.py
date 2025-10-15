@@ -317,7 +317,7 @@ def view_about():
     back_to_home()
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 소개 (About Me)")
-
+    
     # ✅ 프로필 사진
     profile_img_url = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/baekmin.jpg"
     
@@ -326,22 +326,25 @@ def view_about():
             f"""
             <div style="text-align:center; margin-bottom:20px;">
                 <img src="{profile_img_url}" alt="프로필 사진"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=준비중';"
                      style="width:200px; height:200px; border-radius:50%;
                             object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
             </div>
             """,
             unsafe_allow_html=True
         )
-    # 기본 정보 표시
+    
+    # ✅ 기본 정보 표시
     birth_str = profile_data.get("생년월일", "")
     gender_str = profile_data.get("성별", "")
     year, mm, dd, gender, age = parse_birth_info(birth_str, gender_str)
-
+    
     if isinstance(year, int) and isinstance(mm, int) and isinstance(dd, int):
         birth_display = f"{year}-{mm:02d}-{dd:02d} ({gender})"
     else:
         birth_display = f"{birth_str} ({gender})"
-
+    
     st.markdown(f"""
             <div class="info-card">
                 <div class="info-title">기본 정보</div>
@@ -354,7 +357,7 @@ def view_about():
                 <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
             </div>
         """, unsafe_allow_html=True)
-
+    
     st.divider()
     st.markdown("### 연락")
     contact_buttons()
