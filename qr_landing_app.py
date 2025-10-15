@@ -319,14 +319,17 @@ def view_about():
     st.markdown("## 소개 (About Me)")
 
     # ✅ 프로필 사진
-    profile_img_url = profile_data.get("프로필사진url", "") or profile_data.get("프로필 사진 URL", "")
+    profile_img_url = "https://raw.githubusercontent.com/qor0850/streamlit-shorts/main/백민.jpg"
+
     if profile_img_url:
         st.markdown(
             f"""
-                <div style="text-align:center; margin-bottom:20px;">
-                    <img src="백민.jpg" alt="프로필 사진" style="width:200px; height:200px; border-radius:50%; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                </div>
-                """,
+            <div style="text-align:center; margin-bottom:20px;">
+                <img src="{profile_img_url}" alt="프로필 사진"
+                     style="width:200px; height:200px; border-radius:50%;
+                            object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+            </div>
+            """,
             unsafe_allow_html=True
         )
 
