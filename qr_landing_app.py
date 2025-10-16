@@ -321,19 +321,6 @@ def view_about():
     # ✅ 프로필 사진
     profile_img_url = "https://raw.githubusercontent.com/qor0850/qr-landing/main/baekmin.jpg"
                         
-    if profile_img_url:
-        st.markdown(
-            f"""
-            <div style="text-align:center; margin-bottom:20px;">
-                <img src="{profile_img_url}" alt="프로필 사진"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=준비중';"
-                     style="width:150px; height:250px;
-                            object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
     
     # ✅ 기본 정보 표시
     birth_str = profile_data.get("생년월일", "")
@@ -346,6 +333,13 @@ def view_about():
         birth_display = f"{birth_str} ({gender})"
     
     st.markdown(f"""
+            <div style="text-align:center; margin-bottom:20px;">
+                <img src="{profile_img_url}" alt="프로필 사진"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=준비중';"
+                     style="width:150px; height:250px;
+                            object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
+            </div>
             <div class="info-card">
                 <div class="info-title">기본 정보</div>
                 <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
