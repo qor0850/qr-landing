@@ -327,7 +327,7 @@ def view_about():
             <div style="text-align:center; margin-bottom:20px;">
                 <img src="{profile_img_url}" alt="프로필 사진"
                      onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=준비중';"
-                     style="width:200px; height:200px; border-radius:50%;
+                     style="width:200px; height:200px;
                             object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
                 <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
             </div>
