@@ -318,9 +318,8 @@ def view_about():
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 소개 (About Me)")
     
-    # ✅ 프로필 사진
+    # ✅ 프로필 사진 URL
     profile_img_url = "https://raw.githubusercontent.com/qor0850/qr-landing/main/baekmin.jpg"
-                        
     
     # ✅ 기본 정보 표시
     birth_str = profile_data.get("생년월일", "")
@@ -332,14 +331,13 @@ def view_about():
     else:
         birth_display = f"{birth_str} ({gender})"
     
+    # ✅ 가로 배치 레이아웃 적용
     st.markdown(f"""
-            <div style="text-align:center; margin-bottom:20px;">
-                <img src="{profile_img_url}" alt="프로필 사진"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=준비중';"
-                     style="width:150px; height:250px;
-                            object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
-            </div>
+    <div style="display: flex; align-items: flex-start; justify-content: space-between;
+                flex-wrap: wrap; gap: 20px; margin-top: 10px;">
+    
+        <!-- 기본 정보 카드 -->
+        <div style="flex: 1; min-width: 250px;">
             <div class="info-card">
                 <div class="info-title">기본 정보</div>
                 <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
@@ -350,7 +348,24 @@ def view_about():
                 <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
                 <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    
+        <!-- 프로필 사진 -->
+        <div style="flex: 0 0 220px; text-align: center;">
+            <img src="{profile_img_url}" alt="프로필 사진"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/200x250?text=준비중';"
+                 style="width:200px; height:250px; border-radius:12px;
+                        object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+            <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
+        </div>
+    
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.divider()
+    st.markdown("### 연락")
+    contact_buttons()
+    st.markdown('</div>', unsafe_allow_html=True)
     
     st.divider()
     st.markdown("### 연락")
