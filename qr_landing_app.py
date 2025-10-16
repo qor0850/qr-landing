@@ -321,7 +321,7 @@ def view_about():
     # ✅ 프로필 사진 URL
     profile_img_url = "https://raw.githubusercontent.com/qor0850/qr-landing/main/baekmin.jpg"
     
-    # ✅ 기본 정보 표시
+    # ✅ 기본 정보 표시 준비
     birth_str = profile_data.get("생년월일", "")
     gender_str = profile_data.get("성별", "")
     year, mm, dd, gender, age = parse_birth_info(birth_str, gender_str)
@@ -331,13 +331,12 @@ def view_about():
     else:
         birth_display = f"{birth_str} ({gender})"
     
-    # ✅ 가로 배치 레이아웃 적용
-    st.markdown(f"""
-    <div style="display: flex; align-items: flex-start; justify-content: space-between;
-                flex-wrap: wrap; gap: 20px; margin-top: 10px;">
+    # ✅ 컬럼으로 안정적인 가로 배치
+    left, right = st.columns([2, 1], gap="large")
     
-        <!-- 기본 정보 카드 -->
-        <div style="flex: 1; min-width: 250px;">
+    with left:
+        st.markdown(
+            f"""
             <div class="info-card">
                 <div class="info-title">기본 정보</div>
                 <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
@@ -348,29 +347,35 @@ def view_about():
                 <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
                 <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
             </div>
-        </div>
+            """,
+            unsafe_allow_html=True
+        )
     
-        <!-- 프로필 사진 -->
-        <div style="flex: 0 0 220px; text-align: center;">
-            <img src="{profile_img_url}" alt="프로필 사진"
-                 onerror="this.onerror=null; this.src='https://via.placeholder.com/200x250?text=준비중';"
-                 style="width:200px; height:250px; border-radius:12px;
-                        object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-            <div style="font-size:14px; color:gray; margin-top:8px;">(사진이 표시되지 않으면 준비중입니다)</div>
-        </div>
-    
-    </div>
-    """, unsafe_allow_html=True)
+    with right:
+        # st.image로 단순표시 (가장 안정적)
+        try:
+            st.image(profile_img_url, width=220, caption="프로필 사진")
+        except Exception:
+            # HTML fallback (로드 실패 시 '준비중' 표시)
+            st.markdown(
+                """
+                <div style="text-align:center; margin-bottom:20px;">
+                    <img src="https://via.placeholder.com/200x250?text=준비중" alt="준비중"
+                         style="width:200px; height:250px; border-radius:12px;
+                                object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                    <div style="font-size:14px; color:gray; margin-top:8px;">
+                        (사진이 표시되지 않으면 준비중입니다)
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
     
     st.divider()
     st.markdown("### 연락")
     contact_buttons()
-    st.markdown('</div>', unsafe_allow_html=True)
     
-    st.divider()
-    st.markdown("### 연락")
-    contact_buttons()
-    
+    # ✅ content 래퍼 닫기 — 딱 한 번만!
     st.markdown('</div>', unsafe_allow_html=True)
     
     # back_to_home()
