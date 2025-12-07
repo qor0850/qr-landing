@@ -299,16 +299,16 @@ def view_home():
     st.markdown(f"""
         <div class="menu-grid">
             <div class="menu-card menu-1">
-                <a href="?{urlencode({'route': 'about'})}"><span class="menu-icon">🧑</span>소개</a>
+                <a href="?{urlencode({'route': 'about'})}"><span class="menu-icon"></span>소개</a>
             </div>
             <div class="menu-card menu-2">
-                <a href="?{urlencode({'route': 'career'})}"><span class="menu-icon">🎬</span>경력 상세</a>
+                <a href="?{urlencode({'route': 'career'})}"><span class="menu-icon"></span>경력 상세</a>
             </div>
             <div class="menu-card menu-3">
-                <a href="?{urlencode({'route': 'contact'})}"><span class="menu-icon">🏆</span>질문</a>
+                <a href="?{urlencode({'route': 'contact'})}"><span class="menu-icon"></span>질문</a>
             </div>
             <div class="menu-card menu-4">
-                <a href="?{urlencode({'route': 'etc'})}"><span class="menu-icon">📍</span>기타</a>
+                <a href="?{urlencode({'route': 'etc'})}"><span class="menu-icon"></span>기타</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
