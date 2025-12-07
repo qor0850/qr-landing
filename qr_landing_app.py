@@ -68,7 +68,7 @@ def get_mbti_summary(mbti_code):
 
     # ✅ 엑셀 컬럼 구조 그대로 출력
     return f"""
-    ### 🌟 {row['MBTI'].values[0]} ({row['별칭'].values[0]})
+    ###  {row['MBTI'].values[0]} ({row['별칭'].values[0]})
     **주요 특징**: {row['주요 특징'].values[0]}  
     **강점**: {row['강점'].values[0]}  
     **약점**: {row['약점'].values[0]}  
@@ -81,7 +81,7 @@ def get_mbti_summary(mbti_code):
     #     return "해당 MBTI 데이터가 없습니다."
     #
     # return f"""
-    # 🌟 {row['MBTI'].values[0]} ({row['별칭'].values[0]})
+    #  {row['MBTI'].values[0]} ({row['별칭'].values[0]})
     # - 주요 특징: {row['주요 특징'].values[0]}
     # - 강점: {row['강점'].values[0]}
     # - 약점: {row['약점'].values[0]}
@@ -131,17 +131,17 @@ def parse_birth_info(birth_str: str, gender_str: str = ""):
 def contact_buttons():
     cols = st.columns(2)
     with cols[0]:
-        st.link_button("📞 전화하기", f"tel:{profile_data.get('연락처','')}")
+        st.link_button(" 전화하기", f"tel:{profile_data.get('연락처','')}")
     with cols[1]:
-        st.link_button("✉️ 이메일", f"mailto:{profile_data.get('이메일','')}")
+        st.link_button(" 이메일", f"mailto:{profile_data.get('이메일','')}")
     # if "카카오채널" in profile_data and profile_data["카카오채널"]:
-    #     st.link_button("💬 카카오톡 채널", profile_data["카카오채널"], use_container_width=True)
+    #     st.link_button(" 카카오톡 채널", profile_data["카카오채널"], use_container_width=True)
     # if "인스타그램" in profile_data and profile_data["인스타그램"]:
-    #     st.link_button("📷 인스타그램", profile_data["인스타그램"], use_container_width=True)
+    #     st.link_button(" 인스타그램", profile_data["인스타그램"], use_container_width=True)
     # if "예약URL" in profile_data and profile_data["예약URL"]:
-    #     st.link_button("🗓 예약하기", profile_data["예약URL"], use_container_width=True)
+    #     st.link_button(" 예약하기", profile_data["예약URL"], use_container_width=True)
     if "지도URL" in profile_data and profile_data["지도URL"]:
-        st.link_button("📍 위치(네이버지도)", profile_data["지도URL"], use_container_width=True)
+        st.link_button(" 위치(네이버지도)", profile_data["지도URL"], use_container_width=True)
 
 # -----------------------------
 # CSS
@@ -153,7 +153,7 @@ GLOBAL_CSS = """
 .menu-card { height: 25vh; width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: clamp(20px, 5vw, 28px); letter-spacing: 0.4px; color: #FFFFFF; user-select: none; text-decoration: none !important; }
 .menu-card:active { filter: brightness(0.95); transform: scale(0.996); }
 
-/* 🎨 파스텔 톤 적용 */
+/*  파스텔 톤 적용 */
 .menu-1 { background: #A8D8EA; }  /* 파스텔 블루 */
 .menu-2 { background: #B8E0D2; }  /* 파스텔 민트 */
 .menu-3 { background: #FBC4AB; }  /* 파스텔 코랄 */
@@ -204,7 +204,7 @@ def get_mbti_summary(mbti_code):
         return None
 
     return f"""
-    🌟 {row['MBTI'].values[0]} ({row['별칭'].values[0]})
+     {row['MBTI'].values[0]} ({row['별칭'].values[0]})
     - 주요 특징: {row['주요 특징'].values[0]}
     - 강점: {row['강점'].values[0]}
     - 약점: {row['약점'].values[0]}
@@ -221,7 +221,7 @@ def get_openai_answer(user_input, profile, career_df):
     # MBTI 관련 질문일 경우
     mbti_keywords = ["mbti", "성격", "유형"]
     if any(k in user_input.lower() for k in mbti_keywords):
-        my_mbti = profile.get("mbti", "").upper()  # ✅ 프로필 시트에서 내 MBTI 가져오기
+        my_mbti = profile.get("mbti", "").upper()  #  프로필 시트에서 내 MBTI 가져오기
 
         if my_mbti and my_mbti in mbti_data["MBTI"].values:
             summary = get_mbti_summary(my_mbti)
@@ -242,15 +242,15 @@ def get_openai_answer(user_input, profile, career_df):
                 )
                 explanation = response.choices[0].message.content.strip()
 
-                # ✅ 내 MBTI만 출력
+                #  내 MBTI만 출력
                 st.markdown(summary)
-                st.markdown("💡 추가 설명:")
+                st.markdown(" 추가 설명:")
                 st.markdown(explanation)
                 return None
             except Exception as e:
                 return summary + f"\n\n(추가 설명 오류: {e})"
         else:
-            return "⚠️ 프로필에 MBTI 정보가 없습니다. (출처: MBTI 시트)"
+            return " 프로필에 MBTI 정보가 없습니다. (출처: MBTI 시트)"
 
     # 일반 질문 → 기본 프로필 기반
     try:
@@ -282,16 +282,16 @@ def get_openai_answer(user_input, profile, career_df):
 def view_home():
     st.markdown("""
         <div style="text-align:center; padding:20px; margin-bottom:20px;">
-            <h2>⚙️ 이 사이트는 다음 기술로 제작되었습니다</h2>
+            <h2> 이 사이트는 다음 기술로 제작되었습니다</h2>
             <p style="font-size:16px; line-height:1.6;">
-                🖥  <b>Streamlit</b> → 웹 UI/UX 제작<br>
-                📊 <b>Google Sheets + Pandas</b> → 데이터 관리 및 불러오기<br>
-                🤖 <b>OpenAI GPT API</b> → 챗봇 응답 생성 및 장소 추천 로직 구현<br>
-                🎨 <b>HTML + CSS</b> → UI 커스터마이징<br>
-                💾 <b>Session State</b> → 대화 기록, 질문 횟수 제한 관리<br>
-                ☁️ <b>Streamlit Cloud + GitHub</b> → 배포 및 운영, Secrets 통한 보안 관리<br>
-                🌎 <b>지도 검색 API + 자동 링크 생성</b> → 맛집·여행지 관련 지도 URL 동적 생성<br>
-                🍽️ <b>GPT + 지역 선택 UI</b> → 지역 기반 맛집·여행지 추천 엔진 구축
+                 <b>Streamlit</b> → 웹 UI/UX 제작<br>
+                 <b>Google Sheets + Pandas</b> → 데이터 관리 및 불러오기<br>
+                 <b>OpenAI GPT API</b> → 챗봇 응답 생성 및 장소 추천 로직 구현<br>
+                 <b>HTML + CSS</b> → UI 커스터마이징<br>
+                 <b>Session State</b> → 대화 기록, 질문 횟수 제한 관리<br>
+                 <b>Streamlit Cloud + GitHub</b> → 배포 및 운영, Secrets 통한 보안 관리<br>
+                 <b>지도 검색 API + 자동 링크 생성</b> → 맛집·여행지 관련 지도 URL 동적 생성<br>
+                 <b>GPT + 지역 선택 UI</b> → 지역 기반 맛집·여행지 추천 엔진 구축
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -318,10 +318,10 @@ def view_about():
     st.markdown('<div class="content">', unsafe_allow_html=True)
     st.markdown("## 소개 (About Me)")
     
-    # ✅ 프로필 사진 URL
+    #  프로필 사진 URL
     profile_img_url = "https://raw.githubusercontent.com/qor0850/qr-landing/main/baekmin.jpg"
     
-    # ✅ 기본 정보 표시 준비
+    #  기본 정보 표시 준비
     birth_str = profile_data.get("생년월일", "")
     gender_str = profile_data.get("성별", "")
     year, mm, dd, gender, age = parse_birth_info(birth_str, gender_str)
@@ -331,7 +331,7 @@ def view_about():
     else:
         birth_display = f"{birth_str} ({gender})"
     
-    # ✅ 컬럼으로 안정적인 가로 배치
+    #  컬럼으로 안정적인 가로 배치
     left, right = st.columns([2, 1], gap="large")
     
     with left:
@@ -339,13 +339,13 @@ def view_about():
             f"""
             <div class="info-card">
                 <div class="info-title">기본 정보</div>
-                <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
-                <div class="info-row">🎂 생년월일: {birth_display}</div>
-                <div class="info-row">📏 나이: {age}세</div>
-                <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
-                <div class="info-row">🏷 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
-                <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
-                <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
+                <div class="info-row"> 이름: {profile_data.get('이름', '-')}</div>
+                <div class="info-row"> 생년월일: {birth_display}</div>
+                <div class="info-row"> 나이: {age}세</div>
+                <div class="info-row"> 직업: {profile_data.get('직업', '-')}</div>
+                <div class="info-row"> 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
+                <div class="info-row"> 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
+                <div class="info-row"> 사는곳: {profile_data.get('사는곳', '-')}</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -394,13 +394,13 @@ def view_about():
     # st.markdown(f"""
     #     <div class="info-card">
     #         <div class="info-title">기본 정보</div>
-    #         <div class="info-row">👤 이름: {profile_data.get('이름', '-')}</div>
-    #         <div class="info-row">🎂 생년월일: {birth_display}</div>
-    #         <div class="info-row">📏 나이: {age}세</div>
-    #         <div class="info-row">💼 직업: {profile_data.get('직업', '-')}</div>
-    #         <div class="info-row">🏷 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
-    #         <div class="info-row">🛠 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
-    #         <div class="info-row">📍 사는곳: {profile_data.get('사는곳', '-')}</div>
+    #         <div class="info-row"> 이름: {profile_data.get('이름', '-')}</div>
+    #         <div class="info-row"> 생년월일: {birth_display}</div>
+    #         <div class="info-row"> 나이: {age}세</div>
+    #         <div class="info-row"> 직업: {profile_data.get('직업', '-')}</div>
+    #         <div class="info-row"> 한 줄 소개: {profile_data.get('한줄소개', '-')}</div>
+    #         <div class="info-row"> 사용 RPA툴: {profile_data.get('사용rpa툴', '-')}</div>
+    #         <div class="info-row"> 사는곳: {profile_data.get('사는곳', '-')}</div>
     #     </div>
     #     """, unsafe_allow_html=True)
 
@@ -433,10 +433,10 @@ def view_career():
     for _, row in career_data.iterrows():
         detail = str(row["상세 내용"]).replace("\\n", "\n")
         st.markdown(f"""
-        - 📅 **{row['기간']}**  
-          🏢 {row['회사/기관']}  
-          💼 {row['직무']}  
-          📝 {detail}
+        -  **{row['기간']}**  
+           {row['회사/기관']}  
+           {row['직무']}  
+           {detail}
         """)
         st.divider()
 
@@ -453,7 +453,7 @@ def view_contact():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ✅ 여기 안내 문구 추가
-    st.caption("⏱️ 구글 시트 데이터는 5분마다 자동 갱신됩니다.")
+    st.caption(" 구글 시트 데이터는 5분마다 자동 갱신됩니다.")
 
     # FAQ 퀵버튼
     faq = [
@@ -521,7 +521,7 @@ def view_contact():
 
 def view_etc():
     back_to_home()
-    st.markdown("## 📎 주요 도시 맛집 / 여행지 추천")
+    st.markdown("##  주요 도시 맛집 / 여행지 추천")
 
     # ✅ 1단계: 시/도 선택
     sido_list = [
@@ -529,7 +529,7 @@ def view_etc():
         "대전광역시", "울산광역시", "세종특별자치시", "경기도", "강원특별자치도",
         "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주특별자치도"
     ]
-    sido = st.selectbox("📍 1단계: 시/도 선택", sido_list)
+    sido = st.selectbox(" 1단계: 시/도 선택", sido_list)
 
     # ✅ 2단계: 주요 도시 선택
     city_options = {
@@ -552,7 +552,7 @@ def view_etc():
         "제주특별자치도": ["제주시", "서귀포시"]
     }
     city_list = city_options.get(sido, [])
-    city = st.selectbox("📍 2단계: 주요 도시 선택", city_list)
+    city = st.selectbox(" 2단계: 주요 도시 선택", city_list)
 
     # ✅ 3단계: 동 선택 (5개만 예시)
     dong_options = {
@@ -575,7 +575,7 @@ def view_etc():
     dong = st.selectbox("📍 3단계: 동 선택 (대표 5곳)", dong_list)
 
     # ✅ 추천 종류 선택
-    category = st.radio("🍽️ 추천 종류를 선택하세요", ["맛집 추천 🍲", "여행지 추천 🏝️"])
+    category = st.radio("🍽️ 추천 종류를 선택하세요", ["맛집 추천 ", "여행지 추천 "])
 
     # ✅ 추천 버튼
     if st.button("🔍 추천 보기"):
